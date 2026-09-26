@@ -1,0 +1,211 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Modern, crisp light mode — clean canvas, vivid KC purple identity. */
+    --background: 260 33% 99%;
+    --foreground: 260 25% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 260 25% 12%;
+
+    --muted: 260 24% 96%;
+    --muted-foreground: 260 8% 45%;
+
+    --border: 260 16% 91%;
+    --input: 260 16% 91%;
+    --ring: 262 90% 60%;
+
+    /* KC brand accent — a single source of truth. Re-skin the whole platform here.
+       Primary: vivid violet. Partner: magenta (energetic gradients + pops). */
+    --brand: 262 90% 60%;
+    --brand-foreground: 0 0% 100%;
+    --brand-2: 320 90% 60%;
+
+    --radius: 1rem;
+
+    /* Height of the fixed navbar (see Navbar `h-16`). Sections size against it. */
+    --header-h: 4rem;
+  }
+
+  .dark {
+    /* Deep indigo-black canvas with vivid accents (dark mode). */
+    --background: 260 32% 7%;
+    --foreground: 260 15% 96%;
+
+    --card: 260 28% 10%;
+    --card-foreground: 260 15% 96%;
+
+    --muted: 260 20% 15%;
+    --muted-foreground: 260 10% 66%;
+
+    --border: 260 20% 18%;
+    --input: 260 20% 18%;
+    --ring: 262 95% 72%;
+
+    --brand: 262 95% 72%;
+    --brand-foreground: 0 0% 100%;
+    --brand-2: 320 95% 70%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+
+  ::selection {
+    @apply bg-brand/20;
+  }
+
+  /* Theme swap uses the View Transitions API. Disable the default cross-fade so
+     the JS-driven circular clip-path reveal (from the toggle button) is clean. */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+  ::view-transition-old(root) {
+    z-index: 1;
+  }
+  ::view-transition-new(root) {
+    z-index: 9999;
+  }
+}
+
+@layer utilities {
+  /* Premium fluid display type used for hero + section headlines. */
+  .text-display {
+    font-size: clamp(2.5rem, 6vw + 1rem, 5.5rem);
+    line-height: 1.03;
+    letter-spacing: -0.04em;
+  }
+
+  .text-headline {
+    font-size: clamp(2rem, 3.5vw + 0.5rem, 3.25rem);
+    line-height: 1.06;
+    letter-spacing: -0.03em;
+  }
+
+  /* Energetic radial spotlight behind hero content — violet + magenta orbs. */
+  .bg-spotlight {
+    background:
+      radial-gradient(55% 45% at 25% 10%, hsl(var(--brand) / 0.22), transparent 60%),
+      radial-gradient(50% 45% at 85% 20%, hsl(var(--brand-2) / 0.2), transparent 60%),
+      radial-gradient(60% 50% at 50% 100%, hsl(var(--brand) / 0.1), transparent 70%);
+  }
+
+  /* Two-tone brand gradient — for accent text, with a slow creative shimmer. */
+  .text-brand-gradient {
+    background-image: linear-gradient(
+      100deg,
+      hsl(var(--brand)),
+      hsl(var(--brand-2)),
+      hsl(var(--brand))
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: gradient-shift 7s linear infinite;
+  }
+
+  @keyframes gradient-shift {
+    to {
+      background-position: 200% center;
+    }
+  }
+
+  /* Gentle floating motion for decorative orbs / shapes (creative theme). */
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-18px);
+    }
+  }
+
+  .animate-float {
+    animation: float 7s ease-in-out infinite;
+  }
+
+  .animate-float-slow {
+    animation: float 11s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .text-brand-gradient,
+    .animate-float,
+    .animate-float-slow {
+      animation: none;
+    }
+  }
+
+  /* Two-tone brand gradient — for fills (buttons, icon chips, orbs). */
+  .bg-brand-gradient {
+    background-image: linear-gradient(120deg, hsl(var(--brand)), hsl(var(--brand-2)));
+  }
+
+  /* Soft colored glow used under primary CTAs and highlight cards. */
+  .shadow-glow {
+    box-shadow: 0 12px 40px -12px hsl(var(--brand) / 0.55);
+  }
+
+  .glass {
+    background: hsl(var(--card) / 0.6);
+    backdrop-filter: saturate(180%) blur(16px);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Infinite horizontal logo marquee. Track holds two copies of the list,
+     so translating by -50% loops seamlessly. Pauses on hover / reduced motion. */
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  .animate-marquee {
+    animation: marquee 32s linear infinite;
+  }
+
+  .group\/marquee:hover .animate-marquee {
+    animation-play-state: paused;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-marquee {
+      animation: none;
+    }
+  }
+
+  /* Full-viewport section: fills the screen minus the fixed header, and
+     vertically centers its content. `min-height` (not height) so sections
+     with overflowing content still grow instead of clipping. */
+  .section-screen {
+    min-height: calc(100vh - var(--header-h));
+    min-height: calc(100dvh - var(--header-h));
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
